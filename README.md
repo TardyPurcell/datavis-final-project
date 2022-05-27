@@ -1,6 +1,6 @@
 ### TODO
 
-- appendData(path,name,data) 将新属性的数据加入文件
+- [ ] appendData(path,name,data) 将新属性的数据加入文件
 
 ----
 
