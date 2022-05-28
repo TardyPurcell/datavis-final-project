@@ -11,3 +11,5 @@ song为csv文件
 
 TODO:
 	appendData(path,name,data) 将新属性的数据加入文件
+	把歌词等属性写到正确的文件里
+	把dataanalysis的词频统计,情感分析写完然后写到文件里

@@ -1,4 +1,4 @@
-def mkdir(path):  
+def mkdir(path):
     # 引入模块
     import os
     # 去除首位空格
