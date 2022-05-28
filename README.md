@@ -15,7 +15,7 @@ song为数据的文件
 
 song为csv文件
 
-路径调用fileop.getpath
+路径调用fileop.getpath(who,band,album,song)
 
 歌曲文件中数据格式:
 
