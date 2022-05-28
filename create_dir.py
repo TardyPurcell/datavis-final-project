@@ -1,4 +1,4 @@
-import fileop
+import file_op
 import csv
 WHOLIKES=4
 ALBUM=2
@@ -40,7 +40,7 @@ def main():
             for album in albums:
                 songs=albums[album]
                 path="./data/"+who+'/'+band+'/'+album
-                fileop.mkdir(path)
+                file_op.mkdir(path)
                 for song in songs:
                     song=''.join(filter(str.isalnum,song))
                     open(path+'/'+song+'.csv', 'w',encoding='gb18030') 
