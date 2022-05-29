@@ -22,4 +22,4 @@ def mkdir(path):
         return False
 def getpath(who,band,album,song):
     song=''.join(filter(str.isalnum,song))
-    return "./data/"+who+'/'+band+'/'+album+'/'+song+'.csv'
+    return "./data/"+who+'/'+band+'/'+album+'/'+song

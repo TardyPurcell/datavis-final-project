@@ -39,11 +39,11 @@ def main():
             albums=bands[band]
             for album in albums:
                 songs=albums[album]
-                path="./data/"+who+'/'+band+'/'+album
-                file_op.mkdir(path)
+                #path="./data/"+who+'/'+band+'/'+album
                 for song in songs:
                     song=''.join(filter(str.isalnum,song))
-                    open(path+'/'+song+'.csv', 'w',encoding='gb18030') 
+                    path="./data/"+who+'/'+band+'/'+album+'/'+song
+                    file_op.mkdir(path)
                     
                         
                         
