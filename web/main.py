@@ -6,10 +6,6 @@ app = Flask(__name__)
 def health():
   return 'OK'
 
-@app.route('/')
-def index():
-  return render_template('index.html')
-
 def main():
   app.run(debug=True)
 
