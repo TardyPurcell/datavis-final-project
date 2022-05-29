@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Some title</title>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.js"
+      integrity="sha512-dqw6X88iGgZlTsONxZK9ePmJEFrmHwpuMrsUChjAw1mRUhUITE5QU9pkcSox+ynfLhL15Sv2al5A0LVyDCmtUw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.min.css"
+      integrity="sha512-8bHTC73gkZ7rZ7vpqUQThUDhqcNFyYi2xgDgPDHc+GXVGHXq+xPjynxIopALmOPqzo9JZj0k6OqqewdGO3EsrQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body style="padding: 2%;">
+    <!-- 载入D3库 -->
+    <script src="d3.v3.min.js"></script>
+    <script src="scripts/k-means.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.3.2/dist/echarts.min.js"></script>
+    <!-- 
+	一个画布
+	画布相关代码参考：https://www.w3school.com.cn/html5/html_5_canvas.asp
+-->
+    <div class="ui container">
+      <h1 class="ui header">歌词文本可视化</h1>
+      <div class="ui container">
+        <div class="ui segment">
+          <input class="ui input" id="img-file" type="file" accept="image/*" />
+          <canvas id="myCanvas" style="border: 1px solid #c3c3c3">
+            Your browser does not support the canvas element.
+          </canvas>
+        </div>
+
+        <div class="ui segment">
+          <div class="ui form">
+            <div class="field">
+              <label>k值</label>
+              <input
+                class="ui input"
+                placeholder="k值"
+                value="2"
+                id="k-value"
+                type="number"
+              />
+            </div>
+
+            <div class="field">
+              <label>图表类型</label>
+              <select class="ui dropdown" name="charts" id="chart-select">
+                <option value="bar">柱形图</option>
+                <option value="pie">饼图</option>
+              </select>
+            </div>
+            <button class="ui primary button" onclick="show()">show</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="main" style="height: 720px"></div>
+    </div>
+    <script type="text/javascript">
+      let file_input = document.querySelector("#img-file");
+      file_input.addEventListener("change", (event) => {
+        let url = window.URL.createObjectURL(event.target.files[0]);
+        var img = new Image();
+        // img.src = "images/01.jpg";
+        img.src = url;
+        img.onload = function () {
+          let my_canvas = document.getElementById("myCanvas");
+          my_canvas.width = img.width;
+          my_canvas.height = img.height;
+          var context = my_canvas.getContext("2d");
+          context.drawImage(img, 0, 0);
+        };
+      });
+      function show() {
+        let kvalue = document.querySelector("#k-value");
+        let chart_select = document.querySelector("#chart-select");
+        let my_canvas = document.getElementById("myCanvas");
+        let k = parseInt(kvalue.value);
+
+        // data中保存了图片所有像素的颜色信息，每个像素的RGBA信息占数组中4位
+        // RGBA为像素的红色、绿色、蓝色、透明度四个分量
+        var context = my_canvas.getContext("2d");
+        var data = context.getImageData(
+          0,
+          0,
+          my_canvas.width,
+          my_canvas.height
+        ).data;
+        console.log(kMeans(reshape(data), 4));
+        data = reshape(data);
+        let { centroids, categories } = kMeans(data, k);
+        centroids = centroids.map((p) => p.map((x) => Math.round(x)));
+
+        data = centroids.map((clr, i) => {
+          let cnt = 0;
+
+          let hexR = clr[0].toString(16);
+          if (hexR.length == 1) hexR = "0" + hexR;
+          let hexG = clr[1].toString(16);
+          if (hexG.length == 1) hexG = "0" + hexG;
+          let hexB = clr[2].toString(16);
+          if (hexB.length == 1) hexB = "0" + hexB;
+          let hexA = clr[3].toString(16);
+          if (hexA.length == 1) hexA = "0" + hexA;
+          let hexclr = "#" + hexR + hexG + hexB + hexA;
+
+          categories.forEach((c) => {
+            if (c == i) ++cnt;
+          });
+          return {
+            value: cnt,
+            itemStyle: {
+              color: hexclr,
+            },
+          };
+        });
+
+        let option;
+
+        let choice = chart_select.value;
+        if (choice == "bar") {
+          option = {
+            xAxis: {
+              type: "category",
+              data: centroids,
+            },
+            yAxis: {
+              type: "value",
+            },
+            series: [
+              {
+                data,
+                type: "bar",
+              },
+            ],
+          };
+        } else if (choice == "pie") {
+          option = {
+            tooltip: {
+              trigger: "item",
+            },
+            series: [
+              {
+                name: "Access From",
+                type: "pie",
+                radius: "50%",
+                label: {
+                  normal: {
+                    position: "inner",
+                    show: false,
+                  },
+                },
+                data,
+                emphasis: {
+                  itemStyle: {
+                    shadowBlur: 10,
+                    shadowOffsetX: 0,
+                    shadowColor: "rgba(0, 0, 0, 0.5)",
+                  },
+                },
+              },
+            ],
+          };
+        }
+
+        var chartDom = document.getElementById("main");
+        var myChart = echarts.init(chartDom);
+
+        option && myChart.setOption(option);
+      }
+    </script>
+  </body>
+</html>
