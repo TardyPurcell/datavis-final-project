@@ -1,4 +1,5 @@
 import re
+import os
 from typing import Union
 from collections import Counter
 import textblob
@@ -19,15 +20,31 @@ SONG = 0
 YEAR = 3
 LYRICS = 5
 
+def getListFromJson(path):
+    import json
+    with open(path,'r',encoding="gb18030") as f:
+        l=json.load(f)
+        return l
 
-def writeDicToJson(dic, path, filename):
+def getDicFromJson(path):
+    import json
+    with open(path,'r',encoding="gb18030") as f:
+        data=json.load(f)
+        return data
+
+def writeDicToJson(dic, path):
     import json
 
     json_dict = json.dumps(dic, indent=2, sort_keys=True, ensure_ascii=False)
-    with open(path + "/" + filename, "w", encoding="gb18030") as f:
+    with open(path , "w", encoding="gb18030") as f:
         f.write(json_dict)
-    print(path + "/" + filename + "写入成功")
+    print(path + "写入成功")
 
+def writeListToJson(list,path):
+    import json
+    with open(path,'w',encoding="gb18030") as f:
+        json.dump(list,f,indent=4)
+    print(path + "写入成功")
 
 def writeData(func):
     with open("./data/finalldata.csv", "r", encoding="gb18030", newline="") as f:
@@ -92,9 +109,7 @@ def wordCount(row):
         for k in x.keys() | y.keys():
             temp[k] = sum(i.get(k, 0) for i in (x, y))
         return temp
-
     from functools import reduce
-
     z = reduce(sumDict, word_list)
     print(z)
     json_dict = json.dumps(z, indent=2, sort_keys=True, ensure_ascii=False)
@@ -117,10 +132,19 @@ def getText(root: Root, sel: dict[str, str]) -> str:
                 res = res.getAlbum(sel["album"])
                 if "song" in sel:
                     res = res.getSong(sel["song"])
+    #for song in res.getSongs():
+        #print(song.name+'\n')
     if isinstance(res, Song):
         return res.getData("lyrics")
     return " ".join(map(lambda x: x.getData("lyrics"), res.getSongs()))
 
+def getPath(sel:dict[str,str],datafilename:str) ->str:
+    path='./data'
+    for key in sel.keys():
+        path=path+'/'+sel[key]
+    path=path+'/'+datafilename
+    print(path)
+    return path
 
 def preprocess(text: str) -> list[str]:
     pat_letter = re.compile(r"[^a-zA-Z \']+")
@@ -182,16 +206,49 @@ def preprocess(text: str) -> list[str]:
 def wordCnt(
     root: Root, sel: dict[str, str], n: int
 ) -> list[dict[str, Union[str, int]]]:
-    """
+    '''
     output:
     [
         {'word': 'cyf', 'count': 1},
         {'word': 'tml', 'count': 5},
     ]
-    """
-    text = getText(root, sel)
-    cnt = Counter(preprocess(text)).most_common(n)
-    return list(map(lambda x: {"word": x[0], "count": x[1]}, cnt))
+    '''
+    path='./data'
+    for key in sel.keys():
+        path=path+'/'+sel[key]
+    path+='/wordCnt.json'
+    print(path)
+    if not os.path.exists(path):
+        text = getText(root, sel)
+        #print(len(text))
+        blob = textblob.TextBlob(text)
+        sentences = blob.sentences
+        word_list = []
+        for sentence in sentences:
+            word_list.append(sentence.word_counts)
+        #print("this is len word_list")
+        # for word in word_list:
+        #print(len(word_list))
+        # print(type({'1':2,'2':3}))
+        # print(type(word))
+        # print("-----------------------")
+        # word_list内元素:defaultdict(<class 'int'>, {'no': 1, 'matter': 1, 'how': 1, 'many': 1, 'characters': 1, 'are': 1, 'available': 1, 'for': 1, 'your': 1, 'password': 1, 'you': 1, 'should': 1, 'be': 1, 'sure': 1, 'to': 1, 'use': 1, 'every': 1, 'one': 1, 'of': 1, 'them': 1})
+        def sumDict(x, y):
+            temp = {}
+            for k in x.keys() | y.keys():
+                temp[k] = sum(i.get(k, 0) for i in (x, y))
+            return temp
+
+        from functools import reduce
+        z = reduce(sumDict, word_list)
+        #print(z)
+        res=[]
+        for word,count in z.items():
+            res.append({'word':word,'count':count})
+        writeListToJson(res,path)
+        return res
+    else:
+        return getListFromJson(path)
 
 
 def kMeans(root: Root) -> dict[str, Union[str, str]]:
@@ -203,14 +260,30 @@ def kMeans(root: Root) -> dict[str, Union[str, str]]:
 
 
 def emo2(root: Root, sel: dict[str, str]) -> dict[str, float]:
-    return {}
-
+    path=getPath(sel,'emo2.json')
+    if not os.path.exists(path):
+        ret={}
+        text=getText(root,sel)
+        blob = textblob.TextBlob(text)
+        res = blob.sentiment
+        #print(type(res))
+        #print(res.polarity)
+        ret = {"polarity": res.polarity, "subjectivity": res.subjectivity}
+        writeDicToJson(ret,path)
+        return ret
+    else:
+        return getDicFromJson(path)
 
 def emo5(root: Root, sel: dict[str, str]) -> dict[str, int]:
-    ret = te.get_emotion(getText(root, sel))
-    if ret is None:
-        raise Exception("get_emotion failed")
-    return ret
+    path=getPath(sel,'emo5.json')
+    if not os.path.exists(path):
+        ret = te.get_emotion(getText(root, sel))
+        if ret is None:
+            raise Exception("get_emotion failed")
+        writeDicToJson(ret,path)
+        return ret
+    else:
+        return getDicFromJson(path)
 
 
 if __name__ == "__main__":
@@ -219,5 +292,5 @@ if __name__ == "__main__":
     # writeData(sentiment)
     # writeData(releaseYear)
     root = Root("./data/finaldata.csv")
-    print(wordCnt(root, {"who": "tml"}, 10))
-    # print(emo5(root, {"who": "tml"}))
+    #print(wordCnt(root, {"who": "tml"}, 10))
+    print(emo5(root, {"who": "tml",'artist':'LANDMVRKS','album':'Fantasy'}))

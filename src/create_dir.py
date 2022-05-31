@@ -10,7 +10,7 @@ def getdirs():
     whoset=[]
     bandset=[]
     albumset=[]
-    with open("./data/finalldata.csv",'r',encoding='gb18030') as fp:
+    with open("./data/finaldata.csv",'r',encoding='gb18030') as fp:
         rows=csv.reader(fp)
         i=0
         for row in rows:
@@ -44,9 +44,6 @@ def main():
                     song=''.join(filter(str.isalnum,song))
                     path="./data/"+who+'/'+band+'/'+album+'/'+song
                     file_op.mkdir(path)
-                    
-                        
-                        
-                
+
 if __name__=='__main__':
     main()
