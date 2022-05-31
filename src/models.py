@@ -3,12 +3,12 @@ import csv
 
 class Song:
     def __str__(self) -> str:
-        return f'{str(self.data)}>'
+        return f"{str(self.data)}>"
 
     def __init__(self, name, lyrics):
-        self.name = name
+        self.name: str = name
         self.data = {
-            'lyrics': lyrics,
+            "lyrics": lyrics,
         }
 
     def addData(self, key, value):
@@ -20,11 +20,11 @@ class Song:
 
 class Album:
     def __str__(self) -> str:
-        return f'{str(self.songs)}'
+        return f"{str(self.songs)}"
 
     def __init__(self, name) -> None:
         self.name = name
-        self.songs = {}
+        self.songs: dict[str, Song] = {}
 
     def addSong(self, song: Song) -> None:
         self.songs[song.name] = song
@@ -32,14 +32,17 @@ class Album:
     def getSong(self, name: str) -> Song:
         return self.songs[name]
 
+    def getSongs(self) -> list[Song]:
+        return list(self.songs.values())
+
 
 class Artist:
     def __str__(self) -> str:
-        return f'{self.albums}'
+        return f"{self.albums}"
 
     def __init__(self, name: str):
         self.name = name
-        self.albums = {}
+        self.albums: dict[str, Album] = {}
 
     def addAlbum(self, album: Album):
         self.albums[album.name] = album
@@ -47,14 +50,20 @@ class Artist:
     def getAlbum(self, album: str) -> Album:
         return self.albums[album]
 
+    def getSongs(self) -> list[Song]:
+        songs = []
+        for album in self.albums.values():
+            songs += album.getSongs()
+        return songs
+
 
 class Who:
     def __str__(self) -> str:
-        return f'{str(self.artists)}'
+        return f"{str(self.artists)}"
 
     def __init__(self, name):
         self.name = name
-        self.artists = {}
+        self.artists: dict[str, Artist] = {}
 
     def addArtist(self, artist: Artist):
         self.artists[artist.name] = artist
@@ -62,61 +71,66 @@ class Who:
     def getArtist(self, artist: str) -> Artist:
         return self.artists[artist]
 
+    def getSongs(self) -> list[Song]:
+        songs = []
+        for artist in self.artists.values():
+            songs += artist.getSongs()
+        return songs
+
 
 class Root:
     def __str__(self) -> str:
-        return f'{str(self.root)}'
+        return f"{str(self.root)}"
+
+    def addWho(self, who: Who):
+        self.root[who.name] = who
 
     def __init__(self, path):
-        self.root = {}
+        self.root: dict[str, Who] = {}
         WHOLIKES = 4
         ALBUM = 2
         BAND = 1
         SONG = 0
         LYRICS = 5
-        # dirs = {}
-        # whoset = []
-        # bandset = []
-        # albumset = []
-        with open(path, 'r', encoding='gb18030') as fp:
+        with open(path, "r", encoding="gb18030") as fp:
             rows = csv.reader(fp)
             flag = True
             for row in rows:
                 if flag:
                     flag = False
                     continue
-                if row[WHOLIKES] not in self.root:
-                    self.root[row[WHOLIKES]] = Who(row[WHOLIKES])
-                    # whoset.append(row[WHOLIKES])
-                    # dirs.update({row[WHOLIKES]: {}})  # 建立第一级目录
-                if row[BAND] not in self.root[row[WHOLIKES]].artists:
-                    self.root[row[WHOLIKES]].artists[row[BAND]
-                                                     ] = Artist(row[BAND])
-                    # bandset.append(row[BAND])
-                    # dirs[row[WHOLIKES]].update({row[BAND]: {}})  # 添加第二级目录
-                if row[ALBUM] not in self.root[row[WHOLIKES]].artists[row[BAND]].albums:
-                    self.root[row[WHOLIKES]].artists[row[BAND]
-                                                     ].albums[row[ALBUM]] = Album(row[ALBUM])
-                    # albumset.append(row[ALBUM])
-                    # dirs[row[WHOLIKES]][row[BAND]].update(
-                    #     {row[ALBUM]: {}})               # 添加第三级目录
-                if row[SONG] not in self.root[row[WHOLIKES]].artists[row[BAND]].albums[row[ALBUM]].songs:
-                    self.root[row[WHOLIKES]].artists[row[BAND]].albums[row[ALBUM]].songs[row[SONG]] = Song(
-                        row[SONG], row[LYRICS])
-                # dirs[row[WHOLIKES]][row[BAND]][row[ALBUM]].update(
-                #     {row[SONG]: {}})
-                # dirs[row[WHOLIKES]][row[BAND]][row[ALBUM]
-                #     ][row[SONG]].update({'lyrics': row[LYRICS]})
-        # self.root = dirs
+                who, artist, album, song, lyrics = (
+                    row[WHOLIKES],
+                    row[BAND],
+                    row[ALBUM],
+                    row[SONG],
+                    row[LYRICS],
+                )
+                if who not in self.root:
+                    self.addWho(Who(who))
+                if artist not in self.root[who].artists:
+                    self.root[who].addArtist(Artist(artist))
+                if album not in self.root[who].artists[artist].albums:
+                    self.root[who].artists[artist].addAlbum(Album(album))
+                if song not in self.root[who].artists[artist].albums[album].songs:
+                    self.root[who].artists[artist].albums[album].addSong(
+                        Song(row[SONG], row[LYRICS])
+                    )
 
     def getWho(self, who: str) -> Who:
         return self.root[who]
 
+    def getSongs(self) -> list[Song]:
+        songs = []
+        for who in self.root.values():
+            songs += who.getSongs()
+        return songs
 
-if __name__ == '__main__':
-    root = Root('./data/finaldata.csv')
+
+if __name__ == "__main__":
+    root = Root("./data/finaldata.csv")
     for name, who in root.root.items():
-      for name, artist in who.artists.items():
-        for name, album in artist.albums.items():
-          for name, song in album.songs.items():
-            print(name)
+        for name, artist in who.artists.items():
+            for name, album in artist.albums.items():
+                for name, song in album.songs.items():
+                    print(name)
