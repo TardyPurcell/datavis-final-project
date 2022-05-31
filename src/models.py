@@ -1,4 +1,5 @@
 import csv
+from typing import Union
 
 
 class Song:
@@ -35,6 +36,9 @@ class Album:
     def getSongs(self) -> list[Song]:
         return list(self.songs.values())
 
+    def toOption(self) -> dict[str, None]:
+        return {song.name: None for song in self.songs.values()}
+
 
 class Artist:
     def __str__(self) -> str:
@@ -56,6 +60,9 @@ class Artist:
             songs += album.getSongs()
         return songs
 
+    def toOption(self) -> dict[str, Union[str, dict]]:
+        return {album.name: album.toOption() for album in self.albums.values()}
+
 
 class Who:
     def __str__(self) -> str:
@@ -76,6 +83,9 @@ class Who:
         for artist in self.artists.values():
             songs += artist.getSongs()
         return songs
+
+    def toOption(self) -> dict[str, Union[str, dict]]:
+        return {artist.name: artist.toOption() for artist in self.artists.values()}
 
 
 class Root:
@@ -125,6 +135,9 @@ class Root:
         for who in self.root.values():
             songs += who.getSongs()
         return songs
+
+    def toOption(self) -> dict[str, Union[str, dict]]:
+        return {who.name: who.toOption() for who in self.root.values()}
 
 
 if __name__ == "__main__":
