@@ -122,11 +122,9 @@ def getKmeansRes(list:list[models.Song,models.Song],k:int):
     print('clusters:'+str(len(clusters)))
     for i in range(len(songs)):
         print("{0}:{1}".format(songs[i],clusters[i]))
-    print()
-    frame=pd.DataFrame(dic,index=[clusters],columns=['wholikes','artist','album','song','lyric','x','y'])
+        list[i].addData('x',xs[i])
+        list[i].addData('y',ys[i])
     #clusternames=['']*num_clusters
-    print("Top terms per cluster:")
-    print()
     #sort cluster centers by proximity to centroid
     order_centroids = km.cluster_centers_.argsort()[:, ::-1]
     

@@ -121,6 +121,17 @@ def wordCount(row):
     print(path + "词频统计写入成功")
     del blob
 
+def getSongs(root: Root, sel: dict[str, str])-> list[Song,Song]:
+    res = root
+    if "who" in sel:
+        res = res.getWho(sel["who"])
+        if "artist" in sel:
+            res = res.getArtist(sel["artist"])
+            if "album" in sel:
+                res = res.getAlbum(sel["album"])
+                if "song" in sel:
+                    res = res.getSong(sel["song"])
+    return res.getSongs()
 
 def getText(root: Root, sel: dict[str, str]) -> str:
     res = root
@@ -303,8 +314,21 @@ def kMeans_tree(root: Root, k:int) -> dict[str, Union[str, str]]:
         return dic
     else:
         return getDicFromJson(path)
-def kMeans_map(root: Root):
-    pass
+def kMeans_map(root: Root,sel: dict[str, str]):
+    path=getPath(sel,'map.json')
+    if not os.path.exists(path):
+        ret={}
+        temp=[]
+        name=[]
+        for song in getSongs(root,sel):
+            temp.append([song.getData('x'),song.getData('y')])
+            name.append(song.name)
+        ret['data']=temp
+        ret['names']=name
+        writeDicToJson(ret,path)
+        return ret
+    else:
+        return getDicFromJson(path)
 
 def emo2(root: Root, sel: dict[str, str]) -> dict[str, float]:
     path=getPath(sel,'emo2.json')
@@ -341,3 +365,4 @@ if __name__ == "__main__":
     root = Root("./data/finaldata.csv")
     #print(wordCnt(root, {"who": "tml"}, 10))
     print(kMeans_tree(root,3))
+    print(kMeans_map(root,{'who':"tml"}))
