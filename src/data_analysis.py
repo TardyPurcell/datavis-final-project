@@ -304,5 +304,5 @@ if __name__ == "__main__":
     # writeData(wordCount)
     # writeData(sentiment)
     # writeData(releaseYear)
-    root,tree= prework.init()
+    root,tree= prework.addData('newdata.csv')
     print(wordCnt(root,{'who':"tml"}))
