@@ -314,15 +314,15 @@ def kMeans_tree(root: Root, k:int) -> dict[str, Union[str, str]]:
         return dic
     else:
         return getDicFromJson(path)
-def kMeans_map(root: Root,sel: dict[str, str]):
+def kMeans_map(root: Root,sel: dict[str, str]): #需要已经运行过kMeans_tree并且传进去的参数root必须一样
     path=getPath(sel,'map.json')
     if not os.path.exists(path):
         ret={}
         temp=[]
-        name=[]
+        name={}
         for song in getSongs(root,sel):
             temp.append([song.getData('x'),song.getData('y')])
-            name.append(song.name)
+            name[str(song.getData('x'))+','+str(song.getData('y'))]=song.name
         ret['data']=temp
         ret['names']=name
         writeDicToJson(ret,path)
