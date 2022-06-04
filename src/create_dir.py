@@ -1,3 +1,4 @@
+from ntpath import join
 import file_op
 import csv
 WHOLIKES=4
@@ -17,7 +18,6 @@ def getdirs():
             if(i==0):
                 i+=1
                 continue
-            
             if(row[WHOLIKES] not in whoset):
                 whoset.append(row[WHOLIKES])
                 dirs.update({row[WHOLIKES]:{}})#建立第一级目录
@@ -29,6 +29,10 @@ def getdirs():
                 dirs[row[WHOLIKES]][row[BAND]].update({row[ALBUM]:[]}) #添加第三级目录
             dirs[row[WHOLIKES]][row[BAND]][row[ALBUM]].append(row[SONG])
     return dirs
+
+def becomeCorrectDircName(s):
+    s=[i for i in s if i.isalpha() or i.isnumeric() or i==' ']
+    s=''.join(s)
 
 def main():
     dirs=getdirs()

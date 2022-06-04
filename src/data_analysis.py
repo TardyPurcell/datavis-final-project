@@ -58,69 +58,6 @@ def writeData(func):
             func(row)
             # break
 
-
-def releaseYear(row):
-    year = row[YEAR]
-    print(year)
-    dic = {"year": year}
-    path = file_op.getpath(row[WHOLIKES], row[BAND], row[ALBUM], row[SONG])
-    writeDicToJson(dic, path, "发行年份.json")
-
-
-def sentiment(row):
-    text = row[LYRICS]
-    print("this is text")
-    print(text)
-    print("-----------------------")
-    blob = textblob.TextBlob(text)
-    res = blob.sentiment
-    print(type(res))
-    print(res.polarity)
-    dic = {"polarity": res.polarity, "subjectivity": res.subjectivity}
-    json_dict = json.dumps(dic, indent=2, sort_keys=True, ensure_ascii=False)
-    print(json_dict)
-    path = file_op.getpath(row[WHOLIKES], row[BAND], row[ALBUM], row[SONG])
-    print(path)
-    with open(path + "/sentiment.json", "w", encoding="gb18030") as f:
-        f.write(json_dict)
-    print(path + "情感分析写入成功")
-    del blob
-
-
-def wordCount(row):
-    text = row[LYRICS]
-    print("this is text")
-    print(text)
-    print("-----------------------")
-    blob = textblob.TextBlob(text)
-    sentences = blob.sentences
-    word_list = []
-    for sentence in sentences:
-        word_list.append(sentence.word_counts)
-    print("this is word_list")
-    # for word in word_list:
-    # print(len(word_list))
-    # print(type({'1':2,'2':3}))
-    # print(type(word))
-    # print("-----------------------")
-    # word_list内元素:defaultdict(<class 'int'>, {'no': 1, 'matter': 1, 'how': 1, 'many': 1, 'characters': 1, 'are': 1, 'available': 1, 'for': 1, 'your': 1, 'password': 1, 'you': 1, 'should': 1, 'be': 1, 'sure': 1, 'to': 1, 'use': 1, 'every': 1, 'one': 1, 'of': 1, 'them': 1})
-    def sumDict(x, y):
-        temp = {}
-        for k in x.keys() | y.keys():
-            temp[k] = sum(i.get(k, 0) for i in (x, y))
-        return temp
-    from functools import reduce
-    z = reduce(sumDict, word_list)
-    print(z)
-    json_dict = json.dumps(z, indent=2, sort_keys=True, ensure_ascii=False)
-    print(json_dict)
-    path = file_op.getpath(row[WHOLIKES], row[BAND], row[ALBUM], row[SONG])
-    print(path)
-    with open(path + "/wordCount.json", "w", encoding="gb18030") as f:
-        f.write(json_dict)
-    print(path + "词频统计写入成功")
-    del blob
-
 def getSongs(root: Root, sel: dict[str, str])-> list[Song,Song]:
     res = root
     if "who" in sel:
@@ -253,7 +190,7 @@ def tokenize_only(text:str):
     return [x for x in word_tokenize(text) if not x in stopwords.words("english")]
 
 def wordCnt(
-    root: Root, sel: dict[str, str], n: int
+    root: Root, sel: dict[str, str]
 ) -> list[dict[str, Union[str, int]]]:
     '''
     output:
@@ -269,7 +206,8 @@ def wordCnt(
     print(path)
     if not os.path.exists(path):
         text = getText(root, sel)
-        #print(len(text))
+        text=' '.join(preprocess(text))
+        print(text)
         blob = textblob.TextBlob(text)
         sentences = blob.sentences
         word_list = []
@@ -335,6 +273,7 @@ def emo2(root: Root, sel: dict[str, str]) -> dict[str, float]:
     if not os.path.exists(path):
         ret={}
         text=getText(root,sel)
+        text=' '.join(preprocess(text))
         blob = textblob.TextBlob(text)
         res = blob.sentiment
         #print(type(res))
@@ -348,7 +287,9 @@ def emo2(root: Root, sel: dict[str, str]) -> dict[str, float]:
 def emo5(root: Root, sel: dict[str, str]) -> dict[str, int]:
     path=getPath(sel,'emo5.json')
     if not os.path.exists(path):
-        ret = te.get_emotion(getText(root, sel))
+        text=getText(root, sel)
+        text=' '.join(preprocess(text))
+        ret = te.get_emotion(text)
         if ret is None:
             raise Exception("get_emotion failed")
         writeDicToJson(ret,path)
@@ -358,11 +299,10 @@ def emo5(root: Root, sel: dict[str, str]) -> dict[str, int]:
 
 
 if __name__ == "__main__":
+    import prework
     # create_dir.main()
     # writeData(wordCount)
     # writeData(sentiment)
     # writeData(releaseYear)
-    root = Root("./data/finaldata.csv")
-    #print(wordCnt(root, {"who": "tml"}, 10))
-    print(kMeans_tree(root,3))
-    print(kMeans_map(root,{'who':"tml"}))
+    root,tree= prework.init()
+    print(wordCnt(root,{'who':"tml"}))
