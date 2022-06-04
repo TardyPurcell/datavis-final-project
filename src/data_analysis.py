@@ -177,10 +177,11 @@ def preprocess(text: str) -> list[str]:
     text = pat_am.sub(" am", text)
     text = pat_are.sub(" are", text)
     text = pat_ve.sub(" have", text)
+
     text = text.replace("'", " ")
 
     tagged_sent = pos_tag(
-        [x for x in word_tokenize(text) if not x in stopwords.words("english")]
+        [x for x in word_tokenize(text) if not x in stopwords.words("english")] #这里是分词和去停止词
     )
 
     def get_wordnet_pos(tag):
@@ -200,8 +201,45 @@ def preprocess(text: str) -> list[str]:
     for tag in tagged_sent:
         wordnet_pos = get_wordnet_pos(tag[1]) or wordnet.NOUN
         lemmas_sent.append(wnl.lemmatize(tag[0], pos=wordnet_pos))
-    return lemmas_sent
+    return lemmas_sent #这里是去了打回了原形的
 
+
+def tokenize_and_stem(text:str):
+    return preprocess(text)
+def tokenize_only(text:str):
+    pat_letter = re.compile(r"[^a-zA-Z \']+")
+    text = pat_letter.sub(" ", text).strip().lower()
+    # to find the 's following the pronouns. re.I is refers to ignore case
+    pat_is = re.compile("(it|he|she|that|this|there|here)('s)", re.I)
+    # to find the 's following the letters
+    pat_s = re.compile("(?<=[a-zA-Z])'s")
+    # to find the ' following the words ending by s
+    pat_s2 = re.compile("(?<=s)'s?")
+    # to find the abbreviation of not
+    pat_not = re.compile("(?<=[a-zA-Z])n't")
+    # to find the abbreviation of would
+    pat_would = re.compile("(?<=[a-zA-Z])'d")
+    # to find the abbreviation of will
+    pat_will = re.compile("(?<=[a-zA-Z])'ll")
+    # to find the abbreviation of am
+    pat_am = re.compile("(?<=[I|i])'m")
+    # to find the abbreviation of are
+    pat_are = re.compile("(?<=[a-zA-Z])'re")
+    # to find the abbreviation of have
+    pat_ve = re.compile("(?<=[a-zA-Z])'ve")
+
+    text = pat_is.sub(r"\1 is", text)
+    text = pat_s.sub("", text)
+    text = pat_s2.sub("", text)
+    text = pat_not.sub(" not", text)
+    text = pat_would.sub(" would", text)
+    text = pat_will.sub(" will", text)
+    text = pat_am.sub(" am", text)
+    text = pat_are.sub(" are", text)
+    text = pat_ve.sub(" have", text)
+    text = text.replace("'", " ")
+
+    return [x for x in word_tokenize(text) if not x in stopwords.words("english")]
 
 def wordCnt(
     root: Root, sel: dict[str, str], n: int
@@ -251,13 +289,22 @@ def wordCnt(
         return getListFromJson(path)
 
 
-def kMeans(root: Root) -> dict[str, Union[str, str]]:
+def kMeans_tree(root: Root, k:int) -> dict[str, Union[str, str]]:
     """
     output:
     https://fastly.jsdelivr.net/gh/apache/echarts-website@asf-site/examples/data/asset/data/flare.json
     """
-    return {}
-
+    import kmeans
+    path='./data/kMeanstree.json'
+    if not os.path.exists(path):
+        dic=kmeans.getKmeansRes(root.getSongs(),k)
+        print(dic)
+        writeDicToJson(dic,path)
+        return dic
+    else:
+        return getDicFromJson(path)
+def kMeans_map(root: Root):
+    pass
 
 def emo2(root: Root, sel: dict[str, str]) -> dict[str, float]:
     path=getPath(sel,'emo2.json')
@@ -293,4 +340,4 @@ if __name__ == "__main__":
     # writeData(releaseYear)
     root = Root("./data/finaldata.csv")
     #print(wordCnt(root, {"who": "tml"}, 10))
-    print(emo5(root, {"who": "tml",'artist':'LANDMVRKS','album':'Fantasy'}))
+    print(kMeans_tree(root,3))
