@@ -261,7 +261,7 @@ def kMeans_tree(root: Root, k: int) -> dict[str, Union[str, str]]:
     """
     import kmeans
 
-    path = "./data/kMeanstree.json"
+    path = "./data/kMeanstree"+ str(k) + ".json"
     if not os.path.exists(path):
         dic = kmeans.getKmeansRes(root.getSongs(), k)
         print(dic)
@@ -274,6 +274,9 @@ def kMeans_tree(root: Root, k: int) -> dict[str, Union[str, str]]:
 def kMeans_map(root: Root, sel: dict[str, str]):  # 需要已经运行过kMeans_tree并且传进去的参数root必须一样
     path = getPath(sel, "map.json")
     if not os.path.exists(path):
+        if('x' not in getSongs(root, sel)[0].data.keys()):
+            import kmeans
+            kmeans.getKmeansRes(root.getSongs(),1)
         ret = {}
         temp = []
         name = {}
@@ -326,5 +329,6 @@ if __name__ == "__main__":
     # writeData(wordCount)
     # writeData(sentiment)
     # writeData(releaseYear)
-    root, tree = prework.addData("newdata.csv")
-    print(wordCnt(root, {"who": "tml"}))
+    root,tree = prework.init()
+    
+    print(kMeans_map(root, {"who": "tml"}))
