@@ -6,10 +6,12 @@ class Song:
     def __str__(self) -> str:
         return f"{str(self.data)}>"
 
-    def __init__(self,who,artist,album, name, lyrics): #添加这些数据成员方便在建立树型图的时候直接用Song往上确定父节点
-        self.wholike=who
-        self.artist=artist
-        self.album=album
+    def __init__(
+        self, who, artist, album, name, lyrics
+    ):  # 添加这些数据成员方便在建立树型图的时候直接用Song往上确定父节点
+        self.wholike = who
+        self.artist = artist
+        self.album = album
         self.name: str = name
         self.data = {
             "lyrics": lyrics,
@@ -127,7 +129,9 @@ class Root:
                     self.root[who].artists[artist].addAlbum(Album(album))
                 if song not in self.root[who].artists[artist].albums[album].songs:
                     self.root[who].artists[artist].albums[album].addSong(
-                        Song(row[WHOLIKES],row[BAND],row[ALBUM],row[SONG], row[LYRICS]) #def __init__(self,who,artist,album, name, lyrics):
+                        Song(
+                            row[WHOLIKES], row[BAND], row[ALBUM], row[SONG], row[LYRICS]
+                        )  # def __init__(self,who,artist,album, name, lyrics):
                     )
 
     def getWho(self, who: str) -> Who:

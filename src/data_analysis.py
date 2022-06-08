@@ -20,31 +20,39 @@ SONG = 0
 YEAR = 3
 LYRICS = 5
 
+
 def getListFromJson(path):
     import json
-    with open(path,'r',encoding="gb18030") as f:
-        l=json.load(f)
+
+    with open(path, "r", encoding="gb18030") as f:
+        l = json.load(f)
         return l
+
 
 def getDicFromJson(path):
     import json
-    with open(path,'r',encoding="gb18030") as f:
-        data=json.load(f)
+
+    with open(path, "r", encoding="gb18030") as f:
+        data = json.load(f)
         return data
+
 
 def writeDicToJson(dic, path):
     import json
 
     json_dict = json.dumps(dic, indent=2, sort_keys=True, ensure_ascii=False)
-    with open(path , "w", encoding="gb18030") as f:
+    with open(path, "w", encoding="gb18030") as f:
         f.write(json_dict)
     print(path + "写入成功")
 
-def writeListToJson(list,path):
+
+def writeListToJson(list, path):
     import json
-    with open(path,'w',encoding="gb18030") as f:
-        json.dump(list,f,indent=4)
+
+    with open(path, "w", encoding="gb18030") as f:
+        json.dump(list, f, indent=4)
     print(path + "写入成功")
+
 
 def writeData(func):
     with open("./data/finalldata.csv", "r", encoding="gb18030", newline="") as f:
@@ -58,7 +66,8 @@ def writeData(func):
             func(row)
             # break
 
-def getSongs(root: Root, sel: dict[str, str])-> list[Song,Song]:
+
+def getSongs(root: Root, sel: dict[str, str]) -> list[Song]:
     res = root
     if "who" in sel:
         res = res.getWho(sel["who"])
@@ -68,7 +77,8 @@ def getSongs(root: Root, sel: dict[str, str])-> list[Song,Song]:
                 res = res.getAlbum(sel["album"])
                 if "song" in sel:
                     res = res.getSong(sel["song"])
-    return res.getSongs()
+    return res.getSongs() if not isinstance(res, Song) else [res]
+
 
 def getText(root: Root, sel: dict[str, str]) -> str:
     res = root
@@ -80,19 +90,21 @@ def getText(root: Root, sel: dict[str, str]) -> str:
                 res = res.getAlbum(sel["album"])
                 if "song" in sel:
                     res = res.getSong(sel["song"])
-    #for song in res.getSongs():
-        #print(song.name+'\n')
+    # for song in res.getSongs():
+    # print(song.name+'\n')
     if isinstance(res, Song):
         return res.getData("lyrics")
     return " ".join(map(lambda x: x.getData("lyrics"), res.getSongs()))
 
-def getPath(sel:dict[str,str],datafilename:str) ->str:
-    path='./data'
+
+def getPath(sel: dict[str, str], datafilename: str) -> str:
+    path = "./data"
     for key in sel.keys():
-        path=path+'/'+sel[key]
-    path=path+'/'+datafilename
+        path = path + "/" + sel[key]
+    path = path + "/" + datafilename
     print(path)
     return path
+
 
 def preprocess(text: str) -> list[str]:
     pat_letter = re.compile(r"[^a-zA-Z \']+")
@@ -129,17 +141,19 @@ def preprocess(text: str) -> list[str]:
     text = text.replace("'", " ")
 
     tagged_sent = pos_tag(
-        [x for x in word_tokenize(text) if not x in stopwords.words("english")] #这里是分词和去停止词
+        [
+            x for x in word_tokenize(text) if not x in stopwords.words("english")
+        ]  # 这里是分词和去停止词
     )
 
     def get_wordnet_pos(tag):
-        if tag.startswith('J'):
+        if tag.startswith("J"):
             return wordnet.ADJ
-        elif tag.startswith('V'):
+        elif tag.startswith("V"):
             return wordnet.VERB
-        elif tag.startswith('N'):
+        elif tag.startswith("N"):
             return wordnet.NOUN
-        elif tag.startswith('R'):
+        elif tag.startswith("R"):
             return wordnet.ADV
         else:
             return None
@@ -149,12 +163,14 @@ def preprocess(text: str) -> list[str]:
     for tag in tagged_sent:
         wordnet_pos = get_wordnet_pos(tag[1]) or wordnet.NOUN
         lemmas_sent.append(wnl.lemmatize(tag[0], pos=wordnet_pos))
-    return lemmas_sent #这里是去了打回了原形的
+    return lemmas_sent  # 这里是去了打回了原形的
 
 
-def tokenize_and_stem(text:str):
+def tokenize_and_stem(text: str):
     return preprocess(text)
-def tokenize_only(text:str):
+
+
+def tokenize_only(text: str):
     pat_letter = re.compile(r"[^a-zA-Z \']+")
     text = pat_letter.sub(" ", text).strip().lower()
     # to find the 's following the pronouns. re.I is refers to ignore case
@@ -189,33 +205,32 @@ def tokenize_only(text:str):
 
     return [x for x in word_tokenize(text) if not x in stopwords.words("english")]
 
-def wordCnt(
-    root: Root, sel: dict[str, str]
-) -> list[dict[str, Union[str, int]]]:
-    '''
+
+def wordCnt(root: Root, sel: dict[str, str]) -> dict[str, list[dict[str, Union[str, int]]]]:
+    """
     output:
     [
         {'word': 'cyf', 'count': 1},
         {'word': 'tml', 'count': 5},
     ]
-    '''
-    path='./data'
+    """
+    path = "./data"
     for key in sel.keys():
-        path=path+'/'+sel[key]
-    path+='/wordCnt.json'
+        path = path + "/" + sel[key]
+    path += "/wordCnt.json"
     print(path)
     if not os.path.exists(path):
         text = getText(root, sel)
-        text=' '.join(preprocess(text))
+        text = " ".join(preprocess(text))
         print(text)
         blob = textblob.TextBlob(text)
         sentences = blob.sentences
         word_list = []
         for sentence in sentences:
             word_list.append(sentence.word_counts)
-        #print("this is len word_list")
+        # print("this is len word_list")
         # for word in word_list:
-        #print(len(word_list))
+        # print(len(word_list))
         # print(type({'1':2,'2':3}))
         # print(type(word))
         # print("-----------------------")
@@ -227,72 +242,78 @@ def wordCnt(
             return temp
 
         from functools import reduce
+
         z = reduce(sumDict, word_list)
-        #print(z)
-        res=[]
-        for word,count in z.items():
-            res.append({'word':word,'count':count})
-        writeListToJson(res,path)
-        return res
+        # print(z)
+        res = []
+        for word, count in z.items():
+            res.append({"word": word, "count": count})
+        writeListToJson(res, path)
+        return {"cnt": res}
     else:
-        return getListFromJson(path)
+        return {"cnt": getListFromJson(path)}
 
 
-def kMeans_tree(root: Root, k:int) -> dict[str, Union[str, str]]:
+def kMeans_tree(root: Root, k: int) -> dict[str, Union[str, str]]:
     """
     output:
     https://fastly.jsdelivr.net/gh/apache/echarts-website@asf-site/examples/data/asset/data/flare.json
     """
     import kmeans
-    path='./data/kMeanstree.json'
+
+    path = "./data/kMeanstree.json"
     if not os.path.exists(path):
-        dic=kmeans.getKmeansRes(root.getSongs(),k)
+        dic = kmeans.getKmeansRes(root.getSongs(), k)
         print(dic)
-        writeDicToJson(dic,path)
+        writeDicToJson(dic, path)
         return dic
     else:
         return getDicFromJson(path)
-def kMeans_map(root: Root,sel: dict[str, str]): #需要已经运行过kMeans_tree并且传进去的参数root必须一样
-    path=getPath(sel,'map.json')
+
+
+def kMeans_map(root: Root, sel: dict[str, str]):  # 需要已经运行过kMeans_tree并且传进去的参数root必须一样
+    path = getPath(sel, "map.json")
     if not os.path.exists(path):
-        ret={}
-        temp=[]
-        name={}
-        for song in getSongs(root,sel):
-            temp.append([song.getData('x'),song.getData('y')])
-            name[str(song.getData('x'))+','+str(song.getData('y'))]=song.name
-        ret['data']=temp
-        ret['names']=name
-        writeDicToJson(ret,path)
+        ret = {}
+        temp = []
+        name = {}
+        for song in getSongs(root, sel):
+            temp.append([song.getData("x"), song.getData("y")])
+            name[str(song.getData("x")) + "," + str(song.getData("y"))] = song.name
+        ret["data"] = temp
+        ret["names"] = name
+        writeDicToJson(ret, path)
         return ret
     else:
         return getDicFromJson(path)
+
 
 def emo2(root: Root, sel: dict[str, str]) -> dict[str, float]:
-    path=getPath(sel,'emo2.json')
+    path = getPath(sel, "emo2.json")
     if not os.path.exists(path):
-        ret={}
-        text=getText(root,sel)
-        text=' '.join(preprocess(text))
+        ret = {}
+        text = getText(root, sel)
+        text = " ".join(preprocess(text))
         blob = textblob.TextBlob(text)
         res = blob.sentiment
-        #print(type(res))
-        #print(res.polarity)
+        # print(type(res))
+        # print(res.polarity)
         ret = {"polarity": res.polarity, "subjectivity": res.subjectivity}
-        writeDicToJson(ret,path)
+        writeDicToJson(ret, path)
         return ret
     else:
         return getDicFromJson(path)
 
+
 def emo5(root: Root, sel: dict[str, str]) -> dict[str, int]:
-    path=getPath(sel,'emo5.json')
+    path = getPath(sel, "emo5.json")
     if not os.path.exists(path):
-        text=getText(root, sel)
-        text=' '.join(preprocess(text))
+        text = getText(root, sel)
+        text = " ".join(preprocess(text))
         ret = te.get_emotion(text)
         if ret is None:
             raise Exception("get_emotion failed")
-        writeDicToJson(ret,path)
+        writeDicToJson(ret, path)
         return ret
     else:
         return getDicFromJson(path)
@@ -300,9 +321,10 @@ def emo5(root: Root, sel: dict[str, str]) -> dict[str, int]:
 
 if __name__ == "__main__":
     import prework
+
     # create_dir.main()
     # writeData(wordCount)
     # writeData(sentiment)
     # writeData(releaseYear)
-    root,tree= prework.addData('newdata.csv')
-    print(wordCnt(root,{'who':"tml"}))
+    root, tree = prework.addData("newdata.csv")
+    print(wordCnt(root, {"who": "tml"}))

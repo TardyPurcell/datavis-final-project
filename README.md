@@ -1,5 +1,8 @@
-### TODO
+### Issues
 
+- [ ] kMeans_tree的k无效
+- [ ] kMeans_map有问题
+- [ ] 不支持多个session
 
 ----
 ### 今天做的
