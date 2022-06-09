@@ -18,19 +18,23 @@ def getdirs():
         rows = csv.reader(fp)
         i = 0
         for row in rows:
-            if i == 0:
-                i += 1
+            try:
+                if i == 0:
+                    i += 1
+                    continue
+                if row[WHOLIKES] not in whoset:
+                    whoset.append(row[WHOLIKES])
+                    dirs.update({row[WHOLIKES]: {}})  # 建立第一级目录
+                if row[BAND] not in bandset:
+                    bandset.append(row[BAND])
+                    dirs[row[WHOLIKES]].update({row[BAND]: {}})  # 添加第二级目录
+                if row[ALBUM] not in albumset:
+                    albumset.append(row[ALBUM])
+                    dirs[row[WHOLIKES]][row[BAND]].update({row[ALBUM]: []})  # 添加第三级目录
+                dirs[row[WHOLIKES]][row[BAND]][row[ALBUM]].append(row[SONG])
+            except KeyError as e:
+                print('我们已经有这首歌了你还要加,很有品味,但是希望你不要不识抬举')
                 continue
-            if row[WHOLIKES] not in whoset:
-                whoset.append(row[WHOLIKES])
-                dirs.update({row[WHOLIKES]: {}})  # 建立第一级目录
-            if row[BAND] not in bandset:
-                bandset.append(row[BAND])
-                dirs[row[WHOLIKES]].update({row[BAND]: {}})  # 添加第二级目录
-            if row[ALBUM] not in albumset:
-                albumset.append(row[ALBUM])
-                dirs[row[WHOLIKES]][row[BAND]].update({row[ALBUM]: []})  # 添加第三级目录
-            dirs[row[WHOLIKES]][row[BAND]][row[ALBUM]].append(row[SONG])
     return dirs
 
 
