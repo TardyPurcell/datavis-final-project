@@ -4,6 +4,7 @@ import prework
 import data_analysis as da
 from models import Root
 import calendar, time
+from urllib import parse
 
 app = Flask(__name__)
 the_root: Union[Root, None] = None
@@ -23,14 +24,14 @@ def init():
 
 @app.route("/addData", methods=["POST"])
 def addData():
-    file = request.files.get('file')
+    file = request.files.get("file")
     if file is None:
         return "upload failed", 400
     filename = file.filename
     if filename is None:
         return "filename empty", 400
-    suffix = filename.split('.')[-1]
-    if suffix != 'csv':
+    suffix = filename.split(".")[-1]
+    if suffix != "csv":
         return "please upload a csv file", 400
     filepath = f"./upload/{calendar.timegm(time.gmtime())}.csv"
     file.save(filepath)
@@ -41,7 +42,7 @@ def addData():
 
 @app.route("/frequency", methods=["GET"])
 def frequency():
-    args = request.args
+    args = {k: parse.unquote(v) for k, v in request.args.items()}
     if the_root is None:
         return "No data", 404
     return da.wordCnt(the_root, args)
@@ -57,7 +58,7 @@ def kMeans():
 
 @app.route("/fmap", methods=["GET"])
 def fmap():
-    args = request.args
+    args = {k: parse.unquote(v) for k, v in request.args.items()}
     if the_root is None:
         return "No data", 404
     return da.kMeans_map(the_root, args)
@@ -65,7 +66,7 @@ def fmap():
 
 @app.route("/emo", methods=["GET"])
 def emo():
-    args = request.args
+    args = {k: parse.unquote(v) for k, v in request.args.items()}
     if the_root is None:
         return "No data", 404
     return {"emo2": da.emo2(the_root, args), "emo5": da.emo5(the_root, args)}
