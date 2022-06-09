@@ -3,6 +3,7 @@ from flask import Flask, request
 import prework
 import data_analysis as da
 from models import Root
+import calendar, time
 
 app = Flask(__name__)
 the_root: Union[Root, None] = None
@@ -17,12 +18,24 @@ def health():
 def init():
     global the_root
     the_root, _ = prework.init()
-    return "OK"
+    return the_root.toOption()
 
 
 @app.route("/addData", methods=["POST"])
 def addData():
-    pass
+    file = request.files.get('file')
+    if file is None:
+        return "upload failed", 400
+    filename = file.filename
+    if filename is None:
+        return "filename empty", 400
+    suffix = filename.split('.')[-1]
+    if suffix != 'csv':
+        return "please upload a csv file", 400
+    filepath = f"./upload/{calendar.timegm(time.gmtime())}.csv"
+    file.save(filepath)
+    prework.addData(filepath)
+    return "OK"
 
 
 @app.route("/frequency", methods=["GET"])
