@@ -100,7 +100,7 @@ def getText(root: Root, sel: dict[str, str]) -> str:
 def getPath(sel: dict[str, str], datafilename: str) -> str:
     path = "./data"
     for key in sel.keys():
-        path = path + "/" + sel[key]
+        path = path + "/" + re.sub(r"[^A-Za-z0-9\s]+", "", sel[key])
     path = path + "/" + datafilename
     print(path)
     return path
