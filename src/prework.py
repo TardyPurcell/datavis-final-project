@@ -18,10 +18,10 @@ def cleanCsv(path):
     df = pd.read_csv(path, encoding="gb18030")
     hang, lie = df.shape
     for i in range(0, hang):
-        df["song"].loc[i] = re.sub(r"[^A-Za-z0-9 ]+", "", df["song"].loc[i])
-        df["band"].loc[i] = re.sub(r"[^A-Za-z0-9 ]+", "", df["band"].loc[i])
-        df["album"].loc[i] = re.sub(r"[^A-Za-z0-9 ]+", "", df["album"].loc[i])
-        df["who likes"].loc[i] = re.sub(r"[^A-Za-z0-9 ]+", "", df["who likes"].loc[i])
+        df["song"].loc[i] = re.sub(r"[^A-Za-z0-9\s]+", "", df["song"].loc[i])
+        df["band"].loc[i] = re.sub(r"[^A-Za-z0-9\s ]+", "", df["band"].loc[i])
+        df["album"].loc[i] = re.sub(r"[^A-Za-z0-9\s ]+", "", df["album"].loc[i])
+        df["who likes"].loc[i] = re.sub(r"[^A-Za-z0-9\s ]+", "", df["who likes"].loc[i])
     df.to_csv(path, encoding="gb18030", index=False)
 
 

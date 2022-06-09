@@ -331,4 +331,4 @@ if __name__ == "__main__":
     # writeData(releaseYear)
     root,tree = prework.init()
     root,tree=prework.addData('newdata.csv')
-    print(kMeans_map(root, {"who": "tml"}))
+    #print(kMeans_map(root, {"who": "tml"}))
