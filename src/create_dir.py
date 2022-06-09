@@ -54,7 +54,8 @@ def main():
                 songs = albums[album]
                 # path="./data/"+who+'/'+band+'/'+album
                 for song in songs:
-                    song = "".join(filter(str.isalnum, song))
+                    import re
+                    song = re.sub(r"[^A-Za-z0-9\s]+", "",song)
                     path = "./data/" + who + "/" + band + "/" + album + "/" + song
                     file_op.mkdir(path)
 
