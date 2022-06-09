@@ -34,8 +34,9 @@ def addData():
         return "please upload a csv file", 400
     filepath = f"./upload/{calendar.timegm(time.gmtime())}.csv"
     file.save(filepath)
-    prework.addData(filepath)
-    return "OK"
+    global the_root
+    the_root, _ = prework.addData(filepath)
+    return the_root.toOption()
 
 
 @app.route("/frequency", methods=["GET"])
