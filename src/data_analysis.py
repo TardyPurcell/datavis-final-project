@@ -12,6 +12,7 @@ import text2emotion as te
 from nltk import word_tokenize, pos_tag
 from nltk.corpus import stopwords, wordnet
 from nltk.stem import WordNetLemmatizer
+from urllib import parse
 
 WHOLIKES = 4
 ALBUM = 2
@@ -100,7 +101,7 @@ def getText(root: Root, sel: dict[str, str]) -> str:
 def getPath(sel: dict[str, str], datafilename: str) -> str:
     path = "./data"
     for key in sel.keys():
-        path = path + "/" + sel[key]
+        path = path + "/" + parse.quote(sel[key])
     path = path + "/" + datafilename
     print(path)
     return path
@@ -206,7 +207,9 @@ def tokenize_only(text: str):
     return [x for x in word_tokenize(text) if not x in stopwords.words("english")]
 
 
-def wordCnt(root: Root, sel: dict[str, str]) -> dict[str, list[dict[str, Union[str, int]]]]:
+def wordCnt(
+    root: Root, sel: dict[str, str]
+) -> dict[str, list[dict[str, Union[str, int]]]]:
     """
     output:
     [
@@ -215,10 +218,7 @@ def wordCnt(root: Root, sel: dict[str, str]) -> dict[str, list[dict[str, Union[s
     ]
     """
     path = "./data"
-    for key in sel.keys():
-        path = path + "/" + sel[key]
-    path += "/wordCnt.json"
-    print(path)
+    path = getPath(sel, "wordCnt.json")
     if not os.path.exists(path):
         text = getText(root, sel)
         text = " ".join(preprocess(text))
@@ -261,7 +261,7 @@ def kMeans_tree(root: Root, k: int) -> dict[str, Union[str, str]]:
     """
     import kmeans
 
-    path = "./data/kMeanstree"+ str(k) + ".json"
+    path = "./data/kMeanstree" + str(k) + ".json"
     if not os.path.exists(path):
         dic = kmeans.getKmeansRes(root.getSongs(), k)
         print(dic)
@@ -274,9 +274,10 @@ def kMeans_tree(root: Root, k: int) -> dict[str, Union[str, str]]:
 def kMeans_map(root: Root, sel: dict[str, str]):  # 需要已经运行过kMeans_tree并且传进去的参数root必须一样
     path = getPath(sel, "map.json")
     if not os.path.exists(path):
-        if('x' not in getSongs(root, sel)[0].data.keys()):
+        if "x" not in getSongs(root, sel)[0].data.keys():
             import kmeans
-            kmeans.getKmeansRes(root.getSongs(),1)
+
+            kmeans.getKmeansRes(root.getSongs(), 1)
         ret = {}
         temp = []
         name = {}
@@ -329,6 +330,6 @@ if __name__ == "__main__":
     # writeData(wordCount)
     # writeData(sentiment)
     # writeData(releaseYear)
-    root,tree = prework.init()
-    root,tree=prework.addData('newdata.csv')
-    #print(kMeans_map(root, {"who": "tml"}))
+    root, tree = prework.init()
+    root, tree = prework.addData("newdata.csv")
+    # print(kMeans_map(root, {"who": "tml"}))
