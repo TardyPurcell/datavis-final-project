@@ -17,10 +17,7 @@ def getKmeansRes(list: list[models.Song, models.Song], k: int):
     texts = []  # 歌词列表
     for song in Songs:
         texts.append(song.getData("lyrics"))
-    for i in texts[:5]:
-        print("-----------------------------------------------")
-        print(i)
-        print("-----------------------------------------------")
+    
     # nltk.download('stopwords')
     # stopwords=nltk.corpus.stopwords.words('english')
     # print(stopwords[:10])
@@ -42,8 +39,7 @@ def getKmeansRes(list: list[models.Song, models.Song], k: int):
     vocab_frame = pd.DataFrame(
         {"words": totalvocab_tokenized}, index=totalvocab_stemmed
     )
-    print("there are " + str(vocab_frame.shape[0]) + " items in vocab_frame")
-    print(vocab_frame.head(10))
+    
     from sklearn.feature_extraction.text import TfidfVectorizer
 
     # define vectorizer parameters
@@ -85,7 +81,7 @@ def getKmeansRes(list: list[models.Song, models.Song], k: int):
     tfidf_matrix = tfidf_vectorizer.fit_transform(
         texts
     )  # fit the vectorizer to synopses
-    print(tfidf_matrix.shape)
+    
     terms = tfidf_vectorizer.get_feature_names()
     from sklearn.metrics.pairwise import cosine_similarity
 
@@ -127,7 +123,6 @@ def getKmeansRes(list: list[models.Song, models.Song], k: int):
     mds = MDS(n_components=2, dissimilarity="precomputed", random_state=1)
     pos = mds.fit_transform(dist)  # shape (n_components, n_samples)
     xs, ys = pos[:, 0], pos[:, 1]
-    print(xs, ys)
     dic = {
         "song": songs,
         "album": albums,
