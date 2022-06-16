@@ -50,7 +50,13 @@ def frequency():
 
 @app.route("/kMeans", methods=["GET"])
 def kMeans():
-    k = int(request.args.get("k") or 3)
+    k = 0
+    try:
+        k = int(request.args.get("k") or 3)
+    except ValueError:
+        return "k must be an integer", 400
+    if k <= 0:
+        return "k must be greater than 0", 400
     if the_root is None:
         return "No data", 404
     return da.kMeans_tree(the_root, k)

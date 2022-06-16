@@ -7,7 +7,7 @@ class Song:
         return f"{str(self.data)}>"
 
     def __init__(
-        self, who, artist, album, name, lyrics
+        self, who, artist, album, name, lyrics, idx
     ):  # 添加这些数据成员方便在建立树型图的时候直接用Song往上确定父节点
         self.wholike = who
         self.artist = artist
@@ -15,6 +15,7 @@ class Song:
         self.name: str = name
         self.data = {
             "lyrics": lyrics,
+            "idx": idx,
         }
 
     def addData(self, key, value):
@@ -42,7 +43,7 @@ class Album:
         return list(self.songs.values())
 
     def toOption(self) -> dict[str, None]:
-        return {song.name: None for song in self.songs.values()}
+        return {song.name: song.data["idx"] for song in self.songs.values()}
 
 
 class Artist:
@@ -107,6 +108,7 @@ class Root:
         BAND = 1
         SONG = 0
         LYRICS = 5
+        IDX = 6
         with open(path, "r", encoding="gb18030") as fp:
             rows = csv.reader(fp)
             flag = True
@@ -114,12 +116,13 @@ class Root:
                 if flag:
                     flag = False
                     continue
-                who, artist, album, song, lyrics = (
+                who, artist, album, song, lyrics, idx = (
                     row[WHOLIKES],
                     row[BAND],
                     row[ALBUM],
                     row[SONG],
                     row[LYRICS],
+                    int(row[IDX]),
                 )
                 if who not in self.root:
                     self.addWho(Who(who))
@@ -130,7 +133,7 @@ class Root:
                 if song not in self.root[who].artists[artist].albums[album].songs:
                     self.root[who].artists[artist].albums[album].addSong(
                         Song(
-                            row[WHOLIKES], row[BAND], row[ALBUM], row[SONG], row[LYRICS]
+                            who, artist, album, song, lyrics, idx
                         )  # def __init__(self,who,artist,album, name, lyrics):
                     )
 
