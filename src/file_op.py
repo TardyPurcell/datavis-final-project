@@ -1,7 +1,6 @@
 def mkdir(path):
     # 引入模块
     import os
-
     # 去除首位空格
     path = path.strip()
     # 去除尾部 \ 符号
@@ -21,7 +20,6 @@ def mkdir(path):
         # 如果目录存在则不创建，并提示目录已存在
         print(path + " 目录已存在")
         return False
-
 
 def getpath(who, band, album, song):
     song = "".join(filter(str.isalnum, song))

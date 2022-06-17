@@ -215,10 +215,7 @@ def wordCnt(root: Root, sel: dict[str, str]) -> dict[str, list[dict[str, Union[s
     ]
     """
     path = "./data"
-    for key in sel.keys():
-        path = path + "/" + sel[key]
-    path += "/wordCnt.json"
-    print(path)
+    path=getPath(sel,"wordCnt.json")
     if not os.path.exists(path):
         text = getText(root, sel)
         text = " ".join(preprocess(text))
@@ -331,4 +328,6 @@ if __name__ == "__main__":
     # writeData(releaseYear)
     root,tree = prework.init()
     root,tree=prework.addData('newdata.csv')
-    #print(kMeans_map(root, {"who": "tml"}))
+    print(kMeans_tree(root,3))
+    print(wordCnt(root,{"who":"tml","artist":"LANDMVRKS"}))
+    print(emo5(root, {"who": "cyf","artist":"Pink Floyd","album":"The Wall","song":"In The Flesh?"}))
