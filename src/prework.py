@@ -3,6 +3,22 @@ import models
 import data_analysis as da
 import csv
 import numpy as np
+import os
+import shutil
+
+def del_file(filepath):
+    """
+    删除某一目录下的所有文件或文件夹
+    :param filepath: 路径
+    :return:
+    """
+    del_list = os.listdir(filepath)
+    for f in del_list:
+        file_path = os.path.join(filepath, f)
+        if os.path.isfile(file_path):
+            os.remove(file_path)
+        elif os.path.isdir(file_path):
+            shutil.rmtree(file_path)
 
 def init():
     create_dir.main()
@@ -12,6 +28,9 @@ def init():
 
 
 def cleanCsv(path):
+    del_file("./data")
+    shutil.copyfile("./backupdata/finaldata.csv","./data/finaldata.csv")
+    shutil.copyfile("./backupdata/doc_cluster.pkl","./data/doc_cluster.pkl")
     import re
     import pandas as pd
     import numpy as np
