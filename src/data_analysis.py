@@ -101,11 +101,10 @@ def getText(root: Root, sel: dict[str, str]) -> str:
 def getPath(sel: dict[str, str], datafilename: str) -> str:
     path = "./data"
     for key in sel.keys():
-<<<<<<< HEAD
-        path = path + "/" + re.sub(r"[^A-Za-z0-9\s]+", "", sel[key])
-=======
+
+
         path = path + "/" + parse.quote(sel[key])
->>>>>>> 04e44a8d501b539cf2c662cf4fc1be42ec3c2566
+
     path = path + "/" + datafilename
     print(path)
     return path
@@ -222,11 +221,10 @@ def wordCnt(
     ]
     """
     path = "./data"
-<<<<<<< HEAD
-    path=getPath(sel,"wordCnt.json")
-=======
+
+
     path = getPath(sel, "wordCnt.json")
->>>>>>> 04e44a8d501b539cf2c662cf4fc1be42ec3c2566
+
     if not os.path.exists(path):
         text = getText(root, sel)
         text = " ".join(preprocess(text))
@@ -338,14 +336,9 @@ if __name__ == "__main__":
     # writeData(wordCount)
     # writeData(sentiment)
     # writeData(releaseYear)
-<<<<<<< HEAD
-    root,tree = prework.init()
-    root,tree=prework.addData('newdata.csv')
-    print(kMeans_tree(root,3))
-    print(wordCnt(root,{"who":"tml","artist":"LANDMVRKS"}))
-    print(emo5(root, {"who": "cyf","artist":"Pink Floyd","album":"The Wall","song":"In The Flesh?"}))
-=======
+
     root, tree = prework.init()
     root, tree = prework.addData("newdata.csv")
-    # print(kMeans_map(root, {"who": "tml"}))
->>>>>>> 04e44a8d501b539cf2c662cf4fc1be42ec3c2566
+    print(kMeans_map(root, {"who": "tml"}))
+    print(wordCnt(root, {"who": "tml"}))
+

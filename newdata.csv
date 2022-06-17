@@ -1,4 +1,4 @@
-song,band,album,release time,who likes,lyrics
+song,band,album,release time,who likes,lyrics,idx
 Teardrops,Bring Me the Horizon,POST HUMAN SURVIVAL HORROR,2020,tester,"We hurt ourselves for fun
 Force-feed our fear until our hearts go numb
 Addicted to a lonely kind of love
@@ -44,7 +44,7 @@ The emptiness is heavier than you think
 (Teardrops)
 (Teardrops)
 (I'm running outta teardrops)
-The emptiness is heavier than you think"
+The emptiness is heavier than you think",0
 Teardrops,Bring Me the Horizon,POST HUMAN SURVIVAL HORROR,2020,tester,"We hurt ourselves for fun
 Force-feed our fear until our hearts go numb
 Addicted to a lonely kind of love
@@ -90,8 +90,8 @@ The emptiness is heavier than you think
 (Teardrops)
 (Teardrops)
 (I'm running outta teardrops)
-The emptiness is heavier than you think"
-Overrated,LANDMVRKS,Lost in the Waves,2022,tester,"Time to watch it burn! There's something wrong in me Ain't got another chance I never wanted this I'm screaming on the inside, about to suffocate The smoke is getting thick I don't know why I wasted so much time This life is overrated, I try to find my way back to (you) You make things complicated So lost and isolated, I found you trembling in my room Is this so hard to make it through? Trying to find a way The fire is getting higher I'm starting to run out of air and my tongue is bitter It will not be my grave I've got another feeling I can see shadows on the walls Everything is fading It'll no longer be the place we used to know and The man I used to be It'll no longer be the place we used to know and The man I used to be This place is trying to drag me down I'm gonna watch it burn This life is overrated, I try to find my way back to (you) You make things complicated So lost and isolated, I found you trembling in my room Is this so hard to make it through? Cause everything has to change But stories stay the same Spray it all with kerosene Up in smoke, I can feel my body smothering Spray it all with kerosene Up in smoke it won't drag me down I don't feel the pain at all No the fire won't drag me down Spray it all with kerosene Up in smoke, I can feel my body smothering Spray it all with kerosene Up in smoke, I can feel my body smothering This life is overrated, I try to find my way back to This life is overrated, I found you trembling in my room I see the flames and my tongue is bitter It's no longer the place we used to know!"
+The emptiness is heavier than you think",0
+Overrated,LANDMVRKS,Lost in the Waves,2022,tester,"Time to watch it burn! There's something wrong in me Ain't got another chance I never wanted this I'm screaming on the inside, about to suffocate The smoke is getting thick I don't know why I wasted so much time This life is overrated, I try to find my way back to (you) You make things complicated So lost and isolated, I found you trembling in my room Is this so hard to make it through? Trying to find a way The fire is getting higher I'm starting to run out of air and my tongue is bitter It will not be my grave I've got another feeling I can see shadows on the walls Everything is fading It'll no longer be the place we used to know and The man I used to be It'll no longer be the place we used to know and The man I used to be This place is trying to drag me down I'm gonna watch it burn This life is overrated, I try to find my way back to (you) You make things complicated So lost and isolated, I found you trembling in my room Is this so hard to make it through? Cause everything has to change But stories stay the same Spray it all with kerosene Up in smoke, I can feel my body smothering Spray it all with kerosene Up in smoke it won't drag me down I don't feel the pain at all No the fire won't drag me down Spray it all with kerosene Up in smoke, I can feel my body smothering Spray it all with kerosene Up in smoke, I can feel my body smothering This life is overrated, I try to find my way back to This life is overrated, I found you trembling in my room I see the flames and my tongue is bitter It's no longer the place we used to know!",0
 Overrated,Thriving Ivory,Thriving Ivory,2008,tester,"She makes herself at home
 God it's better than her place
 She loves the little things
@@ -117,4 +117,4 @@ Without a god to blame
 She swears this life is often overrated
 She can't relate to a world that only knows her by her face
 Is there anyone still breathing?
-And she thinks that I'm the one that makes it rain"
+And she thinks that I'm the one that makes it rain",0
