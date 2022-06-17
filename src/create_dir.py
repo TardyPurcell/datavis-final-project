@@ -1,6 +1,7 @@
 from ntpath import join
 import file_op
 import csv
+from urllib import parse
 
 WHOLIKES = 4
 ALBUM = 2
@@ -33,7 +34,7 @@ def getdirs():
                     dirs[row[WHOLIKES]][row[BAND]].update({row[ALBUM]: []})  # 添加第三级目录
                 dirs[row[WHOLIKES]][row[BAND]][row[ALBUM]].append(row[SONG])
             except KeyError as e:
-                print('我们已经有这首歌了你还要加,很有品味,但是希望你不要不识抬举')
+                print("我们已经有这首歌了你还要加,很有品味,但是希望你不要不识抬举")
                 continue
     return dirs
 
@@ -54,9 +55,21 @@ def main():
                 songs = albums[album]
                 # path="./data/"+who+'/'+band+'/'+album
                 for song in songs:
-                    import re
-                    song = re.sub(r"[^A-Za-z0-9\s]+", "",song)
-                    path = "./data/" + who + "/" + band + "/" + album + "/" + song
+                    # import re
+                    # song = re.sub(r"[^A-Za-z0-9\s]+", "",song)
+                    who_quoted, band_quoted, album_quoted, song_quoted = map(
+                        parse.quote, [who, band, album, song]
+                    )
+                    path = (
+                        "./data/"
+                        + who_quoted
+                        + "/"
+                        + band_quoted
+                        + "/"
+                        + album_quoted
+                        + "/"
+                        + song_quoted
+                    )
                     file_op.mkdir(path)
 
 

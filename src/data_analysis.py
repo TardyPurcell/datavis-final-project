@@ -12,6 +12,7 @@ import text2emotion as te
 from nltk import word_tokenize, pos_tag
 from nltk.corpus import stopwords, wordnet
 from nltk.stem import WordNetLemmatizer
+from urllib import parse
 
 WHOLIKES = 4
 ALBUM = 2
@@ -100,7 +101,11 @@ def getText(root: Root, sel: dict[str, str]) -> str:
 def getPath(sel: dict[str, str], datafilename: str) -> str:
     path = "./data"
     for key in sel.keys():
+<<<<<<< HEAD
         path = path + "/" + re.sub(r"[^A-Za-z0-9\s]+", "", sel[key])
+=======
+        path = path + "/" + parse.quote(sel[key])
+>>>>>>> 04e44a8d501b539cf2c662cf4fc1be42ec3c2566
     path = path + "/" + datafilename
     print(path)
     return path
@@ -206,7 +211,9 @@ def tokenize_only(text: str):
     return [x for x in word_tokenize(text) if not x in stopwords.words("english")]
 
 
-def wordCnt(root: Root, sel: dict[str, str]) -> dict[str, list[dict[str, Union[str, int]]]]:
+def wordCnt(
+    root: Root, sel: dict[str, str]
+) -> dict[str, list[dict[str, Union[str, int]]]]:
     """
     output:
     [
@@ -215,7 +222,11 @@ def wordCnt(root: Root, sel: dict[str, str]) -> dict[str, list[dict[str, Union[s
     ]
     """
     path = "./data"
+<<<<<<< HEAD
     path=getPath(sel,"wordCnt.json")
+=======
+    path = getPath(sel, "wordCnt.json")
+>>>>>>> 04e44a8d501b539cf2c662cf4fc1be42ec3c2566
     if not os.path.exists(path):
         text = getText(root, sel)
         text = " ".join(preprocess(text))
@@ -258,7 +269,7 @@ def kMeans_tree(root: Root, k: int) -> dict[str, Union[str, str]]:
     """
     import kmeans
 
-    path = "./data/kMeanstree"+ str(k) + ".json"
+    path = "./data/kMeanstree" + str(k) + ".json"
     if not os.path.exists(path):
         dic = kmeans.getKmeansRes(root.getSongs(), k)
         print(dic)
@@ -271,9 +282,10 @@ def kMeans_tree(root: Root, k: int) -> dict[str, Union[str, str]]:
 def kMeans_map(root: Root, sel: dict[str, str]):  # 需要已经运行过kMeans_tree并且传进去的参数root必须一样
     path = getPath(sel, "map.json")
     if not os.path.exists(path):
-        if('x' not in getSongs(root, sel)[0].data.keys()):
+        if "x" not in getSongs(root, sel)[0].data.keys():
             import kmeans
-            kmeans.getKmeansRes(root.getSongs(),1)
+
+            kmeans.getKmeansRes(root.getSongs(), 1)
         ret = {}
         temp = []
         name = {}
@@ -326,8 +338,14 @@ if __name__ == "__main__":
     # writeData(wordCount)
     # writeData(sentiment)
     # writeData(releaseYear)
+<<<<<<< HEAD
     root,tree = prework.init()
     root,tree=prework.addData('newdata.csv')
     print(kMeans_tree(root,3))
     print(wordCnt(root,{"who":"tml","artist":"LANDMVRKS"}))
     print(emo5(root, {"who": "cyf","artist":"Pink Floyd","album":"The Wall","song":"In The Flesh?"}))
+=======
+    root, tree = prework.init()
+    root, tree = prework.addData("newdata.csv")
+    # print(kMeans_map(root, {"who": "tml"}))
+>>>>>>> 04e44a8d501b539cf2c662cf4fc1be42ec3c2566
